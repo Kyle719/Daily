@@ -1,6 +1,6 @@
 {
-  "name": "Workout Calendar",
-  "short_name": "Workout",
+  "name": "Daily",
+  "short_name": "Daily",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f0f12",
