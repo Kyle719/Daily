@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f0f12">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Calendar</title>
+
+<style>
+:root {
+    --bg: #0f0f12;
+    --card: #17171c;
+    --soft: #23232a;
+    --text-main: #ffffff;
+    --text-sub: rgba(255,255,255,0.65);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --shadow-soft: 0 8px 24px rgba(0,0,0,0.35);
+    --goal-accent: linear-gradient(135deg, #8e9aff, #b8c1ff);
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+}
+
+.page { display: none; padding: 20px; }
+.page.active { display: block; }
+
+/* HOME */
+.home-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* GOAL */
+.goal-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-soft);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.goal-title { font-size: 15px; font-weight: 700; }
+.goal-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--goal-accent);
+    color: #000;
+    font-weight: 700;
+}
+
+.goal-content {
+    background: var(--soft);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-sub);
+    outline: none;
+}
+
+.goal-content.editing {
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+    color: var(--text-main);
+}
+
+/* HOME BUTTON */
+.home-button {
+    height: 104px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    touch-action: manipulation;
+    color: #ffffff;
+}
+.home-button:active { transform: scale(0.98); }
+
+.add-button {
+    background: var(--soft);
+    color: var(--text-sub);
+}
+
+/* CALENDAR */
+.month-nav {
+    display:grid;
+    grid-template-columns:48px 1fr 48px;
+    align-items:center;
+}
+.month-nav button {
+    background:var(--soft);
+    border:none;
+    border-radius:12px;
+    height:44px;
+    color:#fff;
+}
+.calendar {
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:10px;
+}
+.day-name {
+    text-align:center;
+    font-size:13px;
+    color:var(--text-sub);
+}
+.date {
+    height:52px;
+    border-radius:14px;
+    background:var(--card);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    position: relative; /* ← 이 줄 추가 */
+}
+.date.today::after {
+    content:"";
+    width:6px;
+    height:6px;
+    background:#ffffff;
+    border-radius:50%;
+    position:absolute;
+    left:50%;
+    bottom:8px;
+    transform:translateX(-50%);
+}
+.date.done {
+    background:var(--theme);
+    font-weight:700;
+}
+
+/* PROGRESS */
+.container {
+    max-width:420px;
+    margin:40px auto;
+    background:var(--card);
+    padding:28px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.progress-wrapper {
+    height:22px;
+    background:var(--soft);
+    border-radius:12px;
+    overflow:hidden;
+    margin:20px 0 10px;
+}
+
+.progress-bar {
+    height:100%;
+    background:linear-gradient(90deg,var(--theme),#fff);
+    width:0%;
+}
+
+.progress-slider {
+    width:100%;
+    margin:8px 0 14px;
+}
+
+button {
+    width:100%;
+    height:52px;
+    margin-top:14px;
+    border:none;
+    border-radius:16px;
+    background:var(--theme);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+}
+.reset { background:#3a3a42; }
+
+/* MODAL */
+.modal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:flex-end;
+}
+.modal.active { display:flex; }
+.modal-box {
+    background:var(--card);
+    width:100%;
+    padding:24px;
+    border-radius:24px 24px 0 0;
+}
+.danger { background:#e53935; }
+
+/* COLOR PRESET */
+.color-grid {
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    margin:14px 0;
+}
+.color-chip {
+    height:36px;
+    border-radius:10px;
+    cursor:pointer;
+    border:2px solid rgba(255,255,255,0.2);
+}
+</style>
+</head>
+
+<body>
+
+<div id="homePage" class="page active">
+    <div class="home-wrapper">
+        <div class="goal-card">
+            <div class="goal-header">
+                <div class="goal-title">Goal</div>
+                <div class="goal-badge">DAILY</div>
+            </div>
+            <div id="goalContent" class="goal-content" contenteditable="false"></div>
+        </div>
+        <div id="homeButtons"></div>
+    </div>
+</div>
+
+<div id="calendarPage" class="page">
+    <div class="month-nav">
+        <button onclick="changeMonth(-1)">◀</button>
+        <div>
+            <div id="yearText"></div>
+            <div id="monthText"></div>
+        </div>
+        <button onclick="changeMonth(1)">▶</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+    <button onclick="goHome()">← 홈으로</button>
+</div>
+
+<div id="progressPage" class="page">
+    <div class="container">
+        <h2 id="exerciseTitle"></h2>
+        <h3 id="dateTitle"></h3>
+        <div class="progress-wrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <input type="range" id="progressSlider" class="progress-slider" min="0" max="100" step="10">
+        <div id="percentText">0%</div>
+        <button onclick="addProgress()">+10%</button>
+        <button class="reset" onclick="resetProgress()">RESET</button>
+        <button onclick="goCalendar()">← 달력으로</button>
+    </div>
+</div>
+
+<div id="manageModal" class="modal">
+    <div class="modal-box">
+        <h3 id="manageTitle"></h3>
+        <input type="color" id="colorPicker">
+        <div class="color-grid" id="colorPresets"></div>
+        <button onclick="moveExercise(-1)">⬆ 위로</button>
+        <button onclick="moveExercise(1)">⬇ 아래로</button>
+        <button class="danger" onclick="deleteExercise()">삭제</button>
+        <button onclick="closeModal()">닫기</button>
+    </div>
+</div>
+
+<script>
+function addLongPress(el, callback, delay = 600) {
+    let timer=null,longPressed=false;
+    const start=()=>{longPressed=false;timer=setTimeout(()=>{longPressed=true;callback();},delay);};
+    const cancel=e=>{clearTimeout(timer);if(longPressed){e.preventDefault();e.stopPropagation();}};
+    el.addEventListener("mousedown",start);
+    el.addEventListener("mouseup",cancel);
+    el.addEventListener("mouseleave",cancel);
+    el.addEventListener("touchstart",start,{passive:true});
+    el.addEventListener("touchend",cancel);
+    el.addEventListener("touchcancel",cancel);
+}
+
+const GOAL_KEY="daily_goal_text";
+goalContent.innerText=localStorage.getItem(GOAL_KEY)||`Push Up : 100 reps / day\nSit Up : 150 reps / day`;
+
+addLongPress(goalContent,()=>{
+    goalContent.contentEditable="true";
+    goalContent.classList.add("editing");
+    goalContent.focus();
+});
+goalContent.onblur=()=>{
+    goalContent.contentEditable="false";
+    goalContent.classList.remove("editing");
+    localStorage.setItem(GOAL_KEY,goalContent.innerText.trim());
+};
+
+const EX_KEY="exercise_list";
+let exercises=JSON.parse(localStorage.getItem(EX_KEY))||[{name:"Push Up",color:"#8e9aff"}];
+let currentExercise,manageIndex;
+let currentYear=new Date().getFullYear(),currentMonth=new Date().getMonth();
+let selectedDate="",progress=0;
+
+function saveExercises(){localStorage.setItem(EX_KEY,JSON.stringify(exercises));}
+
+function renderHome(){
+    homeButtons.innerHTML="";
+    exercises.forEach((e,i)=>{
+        const b=document.createElement("div");
+        b.className="home-button";
+        b.style.background=e.color;
+        b.innerText=e.name;
+        addLongPress(b,()=>openManage(i));
+        b.onclick=()=>openCalendar(e);
+        homeButtons.appendChild(b);
+    });
+    const add=document.createElement("div");
+    add.className="home-button add-button";
+    add.innerText="+ 추가하기";
+    add.onclick=addExercise;
+    homeButtons.appendChild(add);
+}
+
+function addExercise(){
+    const name=prompt("이름");
+    if(!name)return;
+    exercises.push({name,color:"#8e9aff"});
+    saveExercises();renderHome();
+}
+
+const presetColors=[
+"#1f3c88","#273c75","#0652dd","#0a3d62",
+"#5f27cd","#6d214f","#4a148c","#8e44ad",
+"#006266","#1b5e20","#2e7d32","#0b5345",
+"#b71540","#c0392b","#d35400","#a04000",
+"#3c6382","#596275","#4b6584","#2c3e50"
+];
+
+function openManage(i){
+    manageIndex=i;
+    manageTitle.innerText=exercises[i].name;
+    colorPicker.value=exercises[i].color;
+    colorPresets.innerHTML="";
+
+    presetColors.forEach(c=>{
+        const d=document.createElement("div");
+        d.className="color-chip";
+        d.style.background=c;
+
+        // 단일 클릭: 미리보기
+        d.onclick=(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            exercises[manageIndex].color=c;
+            colorPicker.value=c;
+            saveExercises();
+            renderHome();
+        };
+
+        // 더블 클릭 (PC)
+        d.ondblclick=(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+
+            exercises[manageIndex].color=c;
+            saveExercises();
+            renderHome();
+
+            setTimeout(()=>{
+                closeModal();
+                goHome();
+            }, 0);
+        };
+
+        // 더블 탭 (모바일)
+        let lastTap=0;
+        d.ontouchend=(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+
+            const now=Date.now();
+            if(now-lastTap<300){
+                exercises[manageIndex].color=c;
+                saveExercises();
+                renderHome();
+
+                setTimeout(()=>{
+                    closeModal();
+                    goHome();
+                }, 0);
+            }
+            lastTap=now;
+        };
+
+        colorPresets.appendChild(d);
+    });
+    manageModal.classList.add("active");
+}
+
+colorPicker.oninput=e=>{
+    exercises[manageIndex].color=e.target.value;
+    saveExercises();renderHome();
+};
+
+function moveExercise(d){
+    const j=manageIndex+d;
+    if(j<0||j>=exercises.length)return;
+    [exercises[manageIndex],exercises[j]]=[exercises[j],exercises[manageIndex]];
+    manageIndex=j;
+    saveExercises();renderHome();
+}
+
+function deleteExercise(){
+    if(!confirm("정말 삭제할까요?"))return;
+    localStorage.removeItem("records_"+exercises[manageIndex].name);
+    exercises.splice(manageIndex,1);
+    saveExercises();closeModal();renderHome();
+}
+function closeModal(){manageModal.classList.remove("active");}
+
+function openCalendar(e){
+    currentExercise=e;
+    document.documentElement.style.setProperty("--theme",e.color);
+    homePage.classList.remove("active");
+    calendarPage.classList.add("active");
+    buildCalendar();
+}
+function goHome(){
+    calendarPage.classList.remove("active");
+    progressPage.classList.remove("active");
+    homePage.classList.add("active");
+}
+
+function records(){return JSON.parse(localStorage.getItem("records_"+currentExercise.name)||"{}");}
+function saveRecords(r){localStorage.setItem("records_"+currentExercise.name,JSON.stringify(r));}
+
+function buildCalendar(){
+    const today=new Date();
+    calendar.innerHTML=["일","월","화","수","목","금","토"].map(d=>`<div class="day-name">${d}</div>`).join("");
+    yearText.innerText=currentYear+"년";
+    monthText.innerText=currentMonth+1+"월";
+    const f=new Date(currentYear,currentMonth,1).getDay();
+    const l=new Date(currentYear,currentMonth+1,0).getDate();
+    for(let i=0;i<f;i++)calendar.appendChild(document.createElement("div"));
+    const r=records();
+    for(let d=1;d<=l;d++){
+        const ds=`${currentYear}-${currentMonth+1}-${d}`;
+        const div=document.createElement("div");
+        div.className="date";
+        div.innerText=d;
+        if(
+            d===today.getDate() &&
+            currentMonth===today.getMonth() &&
+            currentYear===today.getFullYear()
+        ){
+            div.classList.add("today");
+        }
+        if(r[ds]===100)div.classList.add("done");
+        div.onclick=()=>openProgress(ds);
+        calendar.appendChild(div);
+    }
+}
+
+function changeMonth(diff){
+    const dt=new Date(currentYear,currentMonth+diff);
+    currentYear=dt.getFullYear();
+    currentMonth=dt.getMonth();
+    buildCalendar();
+}
+
+function openProgress(ds){
+    selectedDate=ds;
+    progress=records()[ds]||0;
+    exerciseTitle.innerText=currentExercise.name;
+    dateTitle.innerText=ds;
+    updateProgress();
+    calendarPage.classList.remove("active");
+    progressPage.classList.add("active");
+}
+
+function updateProgress(){
+    progressBar.style.width=progress+"%";
+    percentText.innerText=progress+"%";
+    progressSlider.value=progress;
+    const r=records();
+    r[selectedDate]=progress;
+    saveRecords(r);
+}
+function addProgress(){if(progress<100){progress+=10;updateProgress();}}
+function resetProgress(){progress=0;updateProgress();}
+function goCalendar(){
+    progressPage.classList.remove("active");
+    calendarPage.classList.add("active");
+    buildCalendar();
+}
+progressSlider.oninput=e=>{progress=parseInt(e.target.value);updateProgress();};
+
+renderHome();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js");
+  });
+}
+</script>
+</body>
+</html>
