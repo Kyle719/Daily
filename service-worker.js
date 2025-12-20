@@ -1,4 +1,4 @@
-const CACHE_NAME = "daily-v8"; // ⭐ 버전 올리기 (중요)
+const CACHE_NAME = "daily-v9"; // ⭐ 버전 올리기 (중요)
 const FILES_TO_CACHE = [
   "./",
   "./index.html",

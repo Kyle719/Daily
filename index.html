@@ -336,7 +336,8 @@ button {
     <div class="container">
         <button onclick="saveMemo(this)"
             style="background:#3a3a45; color:#fff; border:none; border-radius:14px;
-                padding:12px 0; font-size:16px; font-weight:600; cursor:pointer;">
+                padding:12px 0; font-size:16px; font-weight:600; cursor:pointer;
+                margin-bottom:8px;">
             저장
         </button>
         <textarea id="memoInput"
@@ -345,9 +346,9 @@ button {
                 border:none; border-radius:14px;
                 padding:14px; font-size:15px;
                 line-height:1.6; overflow:hidden; resize:none;
-                box-sizing:border-box; margin:0;"
+                box-sizing:border-box; margin:0; margin-top:8px;"
             placeholder="메모를 입력하세요">
-        </textarea>
+        </textarea>        
     </div>
 </div>
 
@@ -411,23 +412,38 @@ goalContent.onblur=()=>{
     goalContent.classList.remove("editing");
     localStorage.setItem(GOAL_KEY,goalContent.innerText.trim());
 };
+goalContent.addEventListener("dblclick", () => {
+    goalContent.contentEditable = "true";
+    goalContent.classList.add("editing");
+    goalContent.focus();
+});
+let goalLastTap = 0;
+goalContent.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if (now - goalLastTap < 300) {  // 300ms 이내 두 번째 터치면
+        goalContent.contentEditable = "true";
+        goalContent.classList.add("editing");
+        goalContent.focus();
+    }
+    goalLastTap = now;
+});
 
 // 초기 상태
 memoInput.classList.add("readonly");
 
+memoInput.addEventListener("click", () => {
+    // memoInput.classList.remove("readonly");
+    memoInput.focus();
+});
+
 // 롱프레스 시 편집 허용
 addLongPress(memoInput, () => {
-    memoInput.classList.remove("readonly");
+    // memoInput.classList.remove("readonly");
     memoInput.focus();
 });
 
 memoInput.addEventListener("blur", () => {
-    memoInput.classList.add("readonly");
-
-    localStorage.setItem(
-        MEMO_KEY,
-        memoInput.value.trim()
-    );
+    localStorage.setItem(MEMO_KEY, memoInput.value.trim());
     updateMemoPreview();
 });
 
@@ -471,7 +487,7 @@ function saveMemo(btn){
         btn.disabled = false;
 
         // ✅ Memo 입력 잠금 & 페이지 이동
-        memoInput.classList.add("readonly");   // 입력 잠금
+        memoInput.classList.add("readonly");   // 저장 시 잠금
         memoPage.classList.remove("active");
         homePage.classList.add("active");
     }, 600);
@@ -877,14 +893,21 @@ nameEditor.onkeydown = e => {
 };
 
 const memoCard = document.getElementById("memoCard");
-
 addLongPress(memoCard, () => {
     openMemo();
 });
-
 memoCard.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
+});
+memoCard.addEventListener("dblclick", openMemo);
+let memoLastTap = 0;
+memoCard.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if (now - memoLastTap < 300) {
+        openMemo();
+    }
+    memoLastTap = now;
 });
 
 renderHome();
