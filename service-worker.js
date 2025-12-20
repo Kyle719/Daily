@@ -1,4 +1,4 @@
-const CACHE_NAME = "daily-v1.1";
+const CACHE_NAME = "daily-v2";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
