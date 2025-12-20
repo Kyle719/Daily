@@ -650,55 +650,5 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => { navigator.serviceWorker.register("./service-worker.js"); });
 }
 </script>
-<script>
-function pushState(pageId) {
-    history.pushState({page: pageId}, "", "#" + pageId);
-}
-
-function goHomeWithHistory() {
-    goHome();
-    pushState("homePage");
-}
-
-function openCalendarWithHistory(e) {
-    openCalendar(e);
-    pushState("calendarPage");
-}
-
-function openProgressWithHistory(ds) {
-    openProgress(ds);
-    pushState("progressPage");
-}
-
-document.querySelectorAll('.home-button').forEach(b => {
-    const orig = b.onclick;
-    b.onclick = function(e){
-        orig.call(this,e);
-        pushState("calendarPage");
-    }
-});
-document.querySelector("button[onclick='goHome()']").onclick = goHomeWithHistory;
-document.querySelector("button[onclick='goCalendar()']").onclick = () => { goCalendar(); pushState("calendarPage"); };
-
-// 뒤로가기 처리
-window.onpopstate = function(event) {
-    if (!event.state) {
-        if (homePage.classList.contains("active")) {
-            window.close();
-        } else {
-            goHome();
-            pushState("homePage");
-        }
-    } else {
-        switch(event.state.page) {
-            case "homePage": goHome(); break;
-            case "calendarPage": goCalendar(); break;
-            case "progressPage": progressPage.classList.add("active"); break;
-        }
-    }
-};
-
-pushState("homePage");
-</script>
 </body>
 </html>
