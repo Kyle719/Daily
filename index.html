@@ -111,16 +111,43 @@ body {
 
 /* CALENDAR */
 .month-nav {
-    display:grid;
-    grid-template-columns:48px 1fr 48px;
-    align-items:center;
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    padding: 12px 14px;
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 14px;
 }
-.month-nav button {
-    background:var(--soft);
-    border:none;
-    border-radius:12px;
-    height:44px;
-    color:#fff;
+.nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    border: none;
+    background: var(--soft);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.nav-btn:active {
+    transform: scale(0.95);
+}
+.month-title {
+    text-align: center;
+    line-height: 1.2;
+}
+#yearText {
+    font-size: 12px;
+    color: var(--text-sub);
+    font-weight: 500;
+}
+#monthText {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 .calendar {
     display:grid;
@@ -156,6 +183,10 @@ body {
 .date.done {
     background:var(--theme);
     font-weight:700;
+}
+.today-btn {
+    background:#2c2c34;
+    margin:10px 0;
 }
 
 /* PROGRESS */
@@ -291,14 +322,15 @@ button {
 
 <div id="calendarPage" class="page">
     <div class="month-nav">
-        <button onclick="changeMonth(-1)">◀</button>
-        <div>
+        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="month-title">
             <div id="yearText"></div>
             <div id="monthText"></div>
         </div>
-        <button onclick="changeMonth(1)">▶</button>
-    </div>
+        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+    </div>    
     <div class="calendar" id="calendar"></div>
+    <button class="today-btn" onclick="goToday()">오늘</button>
     <button onclick="goHome()">← 홈으로</button>
 </div>
 
@@ -642,6 +674,15 @@ nameEditor.onchange = () => {
 };
 
 nameEditor.onkeydown = e => { if(e.key === "Enter"){ nameEditor.blur(); } };
+
+function goToday(){
+    const today = new Date();
+    currentYear = today.getFullYear();
+    currentMonth = today.getMonth();
+    const ds = `${currentYear}-${currentMonth + 1}-${today.getDate()}`;
+    buildCalendar();
+    openProgress(ds);
+}
 
 renderHome();
 </script>
