@@ -344,7 +344,6 @@ button {
         </textarea>
 
         <button onclick="saveMemo(this)">저장</button>
-        <button class="reset" onclick="deleteMemo()">삭제</button>
         <button onclick="goHome()">← 홈으로</button>
     </div>
 </div>
@@ -434,10 +433,11 @@ const MEMO_KEY = "daily_memo";
 function openMemo(){
     memoInput.value = localStorage.getItem(MEMO_KEY) || "";
 
-    // ✅ 여기 추가
+    // 입력 가능
     memoInput.classList.remove("readonly");
     memoInput.focus();
 
+    // 페이지 전환
     homePage.classList.remove("active");
     memoPage.classList.add("active");
 }
@@ -467,16 +467,11 @@ function saveMemo(btn){
         btn.innerText = originalText;
         btn.disabled = false;
 
+        // ✅ Memo 입력 잠금 & 페이지 이동
+        memoInput.classList.add("readonly");   // 입력 잠금
         memoPage.classList.remove("active");
         homePage.classList.add("active");
     }, 600);
-}
-
-function deleteMemo(){
-    if(!confirm("메모를 삭제할까요?")) return;
-    localStorage.removeItem(MEMO_KEY);
-    memoInput.value = "";
-    updateMemoPreview();
 }
 
 function updateMemoPreview(){
@@ -511,6 +506,7 @@ function renderHome(){
     add.innerText="+ 추가하기";
     add.onclick=addExercise;
     homeButtons.appendChild(add);
+    updateMemoPreview();
 }
 
 function addExercise(){
@@ -651,8 +647,13 @@ function openCalendar(e){
     buildCalendar();
 }
 function goHome(){
+    // Memo 입력 잠금
+    memoInput.classList.add("readonly");
+
+    // 모든 페이지 비활성화
     calendarPage.classList.remove("active");
     progressPage.classList.remove("active");
+    memoPage.classList.remove("active");
     homePage.classList.add("active");
 }
 
