@@ -169,17 +169,19 @@ body {
 }
 
 .progress-wrapper {
-    height:22px;
-    background:var(--soft);
-    border-radius:12px;
-    overflow:hidden;
-    margin:20px 0 10px;
+    height: 40px;              /* ⬅ 기존 22px → 30px */
+    background: var(--soft);
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 20px 0 10px;
+    touch-action: none;
 }
 
 .progress-bar {
-    height:100%;
-    background:linear-gradient(90deg,var(--theme),#fff);
-    width:0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--theme), #ffffff);
+    width: 0%;
+    transition: width 0.08s linear;   /* 드래그 시 살짝 부드럽게 */
 }
 
 .progress-slider {
@@ -743,17 +745,57 @@ function goCalendar(){
 
 const progressWrapper = document.querySelector(".progress-wrapper");
 
-progressWrapper.addEventListener("click", (e) => {
+let dragging = false;
+
+function getClientX(e) {
+    if (e.touches && e.touches.length) {
+        return e.touches[0].clientX;
+    }
+    if (e.changedTouches && e.changedTouches.length) {
+        return e.changedTouches[0].clientX;
+    }
+    return e.clientX;
+}
+
+function updateProgressByDrag(e) {
+    if (!dragging) return;
+
     const rect = progressWrapper.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const ratio = x / rect.width;
+    const clientX = getClientX(e);
+    if (clientX == null) return;
 
-    // 10% 단위로 스냅
+    let ratio = (clientX - rect.left) / rect.width;
+    ratio = Math.max(0, Math.min(1, ratio));
+
+    // 10% 단위 스냅
     progress = Math.round(ratio * 10) * 10;
-    progress = Math.max(0, Math.min(100, progress));
 
-    haptic();
     updateProgress();
+}
+
+/* ===== PC (마우스) ===== */
+progressWrapper.addEventListener("mousedown", (e) => {
+    dragging = true;
+    updateProgressByDrag(e);
+});
+
+document.addEventListener("mousemove", updateProgressByDrag);
+document.addEventListener("mouseup", () => {
+    if (dragging) haptic();
+    dragging = false;
+});
+
+/* ===== 모바일 (터치) ===== */
+progressWrapper.addEventListener("touchstart", (e) => {
+    e.preventDefault();   // ⭐ PWA / 모바일 필수
+    dragging = true;
+    updateProgressByDrag(e);
+}, { passive: false });
+
+document.addEventListener("touchmove", updateProgressByDrag, { passive: false });
+document.addEventListener("touchend", () => {
+    if (dragging) haptic();
+    dragging = false;
 });
 
 nameEditor.onchange = () => {
