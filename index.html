@@ -87,6 +87,21 @@ body {
     font-size: 14px;
 }
 
+#memoInput {
+    width: 100%;
+    min-height: 180px;
+    background: #23232a;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow: hidden;
+    resize: none;
+    box-sizing: border-box;
+}
+
 /* HOME BUTTON */
 .home-button {
     height: 88px;      /* ⬅ 92 → 88 (살짝만 컴팩트) */
@@ -160,12 +175,13 @@ body {
 
 /* PROGRESS */
 .container {
-    max-width:420px;
-    margin:40px auto;
-    background:var(--card);
-    padding:28px;
-    border-radius:20px;
-    text-align:center;
+    width: 100%;          /* 화면 폭 전체 사용 */
+    max-width: 90%;       /* 화면 폭의 90%까지만 제한 */
+    margin: 20px auto;    /* 상하 여백만 유지 */
+    background: var(--card);
+    padding: 20px;        /* padding 조절 */
+    border-radius: 20px;
+    text-align: center;
 }
 
 .progress-wrapper {
