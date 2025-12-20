@@ -334,17 +334,20 @@ button {
 
 <div id="memoPage" class="page">
     <div class="container">
-        <h2>Memo</h2>
-
+        <button onclick="saveMemo(this)"
+            style="background:#3a3a45; color:#fff; border:none; border-radius:14px;
+                padding:12px 0; font-size:16px; font-weight:600; cursor:pointer;">
+            저장
+        </button>
         <textarea id="memoInput"
-            style="width:100%;min-height:180px;
-                   background:#23232a;color:#fff;
-                   border:none;border-radius:14px;
-                   padding:14px;font-size:15px;">
+            style="width:100%; min-height:180px; max-width:100%;
+                background:#23232a; color:#fff;
+                border:none; border-radius:14px;
+                padding:14px; font-size:15px;
+                line-height:1.6; overflow:hidden; resize:none;
+                box-sizing:border-box; margin:0;"
+            placeholder="메모를 입력하세요">
         </textarea>
-
-        <button onclick="saveMemo(this)">저장</button>
-        <button onclick="goHome()">← 홈으로</button>
     </div>
 </div>
 
@@ -480,6 +483,26 @@ function updateMemoPreview(){
         text && text.trim()
         ? text.split("\n")[0].slice(0, 60)
         : "메모를 적어보세요";
+}
+
+function adjustTextareaHeight(el){
+    el.style.height = 'auto'; // 초기화
+    el.style.height = el.scrollHeight + 'px'; // 내용에 맞게 높이
+}
+
+memoInput.addEventListener('input', () => {
+    adjustTextareaHeight(memoInput);
+});
+
+// 페이지 열릴 때 높이 초기화
+function openMemo(){
+    memoInput.value = localStorage.getItem(MEMO_KEY) || "";
+    memoInput.classList.remove("readonly");
+    memoInput.focus();
+    adjustTextareaHeight(memoInput); // 초기 높이 적용
+
+    homePage.classList.remove("active");
+    memoPage.classList.add("active");
 }
 
 const EX_KEY="exercise_list";
