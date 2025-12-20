@@ -78,9 +78,18 @@ body {
     color: var(--text-main);
 }
 
+.detail-card {
+    background: linear-gradient(180deg, #17171c, #1e1e25);
+}
+
+.detail-card .goal-content {
+    color: var(--text-sub);
+    font-size: 14px;
+}
+
 /* HOME BUTTON */
 .home-button {
-    height: 104px;
+    height: 92px;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
@@ -88,7 +97,8 @@ body {
     font-size: 21px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
+    margin: 2px; /* 미세한 분리감 */
+    box-shadow: 0 10px 26px rgba(0,0,0,0.45);
     touch-action: manipulation;
     color: #ffffff;
 }
@@ -220,6 +230,43 @@ button {
     cursor:pointer;
     border:2px solid rgba(255,255,255,0.2);
 }
+/* calendar grid 기준점 */
+#calendar {
+    position: relative;
+}
+
+/* MONTH COMPLETE STAMP - CALENDAR ONLY */
+#calendar.completed-month::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+
+    width: 85%;
+    height: 85%;
+
+    background-image: url("icon-512.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 10;
+}
+#homeButtons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 14px;   /* 좌우 간격 */
+    row-gap: 18px;      /* 상하 간격 */
+}
+
+#memoInput.readonly {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
 </style>
 </head>
 
@@ -233,6 +280,14 @@ button {
                 <div class="goal-badge">DAILY</div>
             </div>
             <div id="goalContent" class="goal-content" contenteditable="false"></div>
+        </div>
+        <div class="goal-card detail-card" id="memoCard">
+            <div class="goal-header">
+                <div class="goal-title">Memo</div>
+            </div>
+            <div class="goal-content" id="memoPreview">
+                메모를 적어보세요
+            </div>
         </div>
         <div id="homeButtons"></div>
     </div>
@@ -261,24 +316,63 @@ button {
         <input type="range" id="progressSlider" class="progress-slider" min="0" max="100" step="10">
         <div id="percentText">0%</div>
         <button onclick="addProgress()">+10%</button>
-        <button class="reset" onclick="resetProgress()">RESET</button>
+        <button onclick="completeProgress()">완료</button>
         <button onclick="goCalendar()">← 달력으로</button>
+    </div>
+</div>
+
+<div id="memoPage" class="page">
+    <div class="container">
+        <h2>Memo</h2>
+
+        <textarea id="memoInput"
+            style="width:100%;min-height:180px;
+                   background:#23232a;color:#fff;
+                   border:none;border-radius:14px;
+                   padding:14px;font-size:15px;">
+        </textarea>
+
+        <button onclick="saveMemo(this)">저장</button>
+        <button class="reset" onclick="deleteMemo()">삭제</button>
+        <button onclick="goHome()">← 홈으로</button>
     </div>
 </div>
 
 <div id="manageModal" class="modal">
     <div class="modal-box">
-        <h3 id="manageTitle"></h3>
+        <h3>이름 수정</h3>
+        <input id="nameEditor"
+            type="text"
+            style="width:100%;height:44px;border-radius:12px;border:none;padding:0 12px;margin:10px 0;background:#23232a;color:#fff;">
         <input type="color" id="colorPicker">
         <div class="color-grid" id="colorPresets"></div>
         <button onclick="moveExercise(-1)">⬆ 위로</button>
         <button onclick="moveExercise(1)">⬇ 아래로</button>
         <button class="danger" onclick="deleteExercise()">삭제</button>
-        <button onclick="closeModal()">닫기</button>
+        <button onclick="closeModal()">확인</button>
+    </div>
+</div>
+
+<div id="addModal" class="modal">
+    <div class="modal-box">
+        <h3>추가</h3>
+        <input id="newExerciseInput"
+               type="text"
+               placeholder="이름을 입력하세요"
+               style="width:100%;height:44px;border-radius:12px;border:none;padding:0 12px;margin:12px 0;background:#23232a;color:#fff;">
+
+        <button onclick="confirmAddExercise()">추가</button>
+        <button class="reset" onclick="closeAddModal()">취소</button>
     </div>
 </div>
 
 <script>
+function haptic(){
+    if (navigator.vibrate) {
+        navigator.vibrate(15);
+    }
+}
+
 function addLongPress(el, callback, delay = 600) {
     let timer=null,longPressed=false;
     const start=()=>{longPressed=false;timer=setTimeout(()=>{longPressed=true;callback();},delay);};
@@ -304,6 +398,83 @@ goalContent.onblur=()=>{
     goalContent.classList.remove("editing");
     localStorage.setItem(GOAL_KEY,goalContent.innerText.trim());
 };
+
+// 초기 상태
+memoInput.classList.add("readonly");
+
+// 롱프레스 시 편집 허용
+addLongPress(memoInput, () => {
+    memoInput.classList.remove("readonly");
+    memoInput.focus();
+});
+
+memoInput.addEventListener("blur", () => {
+    memoInput.classList.add("readonly");
+
+    localStorage.setItem(
+        MEMO_KEY,
+        memoInput.value.trim()
+    );
+    updateMemoPreview();
+});
+
+const MEMO_KEY = "daily_memo";
+
+function openMemo(){
+    memoInput.value = localStorage.getItem(MEMO_KEY) || "";
+
+    // ✅ 여기 추가
+    memoInput.classList.remove("readonly");
+    memoInput.focus();
+
+    homePage.classList.remove("active");
+    memoPage.classList.add("active");
+}
+
+function goHome(){
+    // ✅ Memo 입력 잠금
+    memoInput.classList.add("readonly");
+
+    calendarPage.classList.remove("active");
+    progressPage.classList.remove("active");
+    memoPage.classList.remove("active");
+    homePage.classList.add("active");
+}
+
+function saveMemo(btn){
+    const text = memoInput.value.trim();
+    localStorage.setItem(MEMO_KEY, text);
+    updateMemoPreview();
+
+    haptic();
+
+    const originalText = btn.innerText;
+    btn.innerText = "저장됨 ✓";
+    btn.disabled = true;
+
+    setTimeout(() => {
+        btn.innerText = originalText;
+        btn.disabled = false;
+
+        memoPage.classList.remove("active");
+        homePage.classList.add("active");
+    }, 600);
+}
+
+function deleteMemo(){
+    if(!confirm("메모를 삭제할까요?")) return;
+    localStorage.removeItem(MEMO_KEY);
+    memoInput.value = "";
+    updateMemoPreview();
+}
+
+function updateMemoPreview(){
+    const text = localStorage.getItem(MEMO_KEY);
+    memoPreview.innerText =
+        text && text.trim()
+        ? text.split("\n")[0].slice(0, 60)
+        : "메모를 적어보세요";
+}
 
 const EX_KEY="exercise_list";
 let exercises=JSON.parse(localStorage.getItem(EX_KEY))||[{name:"Push Up",color:"#8e9aff"}];
@@ -332,10 +503,41 @@ function renderHome(){
 }
 
 function addExercise(){
-    const name=prompt("이름");
-    if(!name)return;
-    exercises.push({name,color:"#8e9aff"});
-    saveExercises();renderHome();
+    newExerciseInput.value = "";
+    addModal.classList.add("active");
+    setTimeout(()=>newExerciseInput.focus(), 0);
+}
+
+function closeAddModal(){
+    addModal.classList.remove("active");
+}
+
+function confirmAddExercise(){
+    const name = newExerciseInput.value.trim();
+    if(!name) return;
+
+    // 🔒 중복 이름 방지
+    const exists = exercises.some(e =>
+        e.name.trim().toLowerCase() === name.toLowerCase()
+    );
+    if(exists){
+        alert("이미 존재하는 운동 이름입니다");
+        return;
+    }
+
+    // ➕ 운동 추가
+    exercises.push({
+        name,
+        color: "#8e9aff"
+    });
+
+    saveExercises();
+    renderHome();
+    updateMemoPreview();
+    closeAddModal();
+
+    // 🎯 방금 추가한 운동 관리 모달 바로 열기
+    openManage(exercises.length - 1);
 }
 
 const presetColors=[
@@ -346,9 +548,11 @@ const presetColors=[
 "#3c6382","#596275","#4b6584","#2c3e50"
 ];
 
+const calendarGrid = document.getElementById("calendar");
+
 function openManage(i){
     manageIndex=i;
-    manageTitle.innerText=exercises[i].name;
+    nameEditor.value = exercises[i].name;
     colorPicker.value=exercises[i].color;
     colorPresets.innerHTML="";
 
@@ -469,6 +673,23 @@ function buildCalendar(){
         div.onclick=()=>openProgress(ds);
         calendar.appendChild(div);
     }
+    checkMonthCompleted();
+}
+
+function checkMonthCompleted() {
+    const r = records();
+    const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    for (let d = 1; d <= lastDay; d++) {
+        const ds = `${currentYear}-${currentMonth + 1}-${d}`;
+        if (r[ds] !== 100) {
+            calendarGrid.classList.remove("completed-month");
+            return;
+        }
+    }
+
+    // ⭐ 여기 중요
+    calendarGrid.classList.add("completed-month");
 }
 
 function changeMonth(diff){
@@ -497,13 +718,75 @@ function updateProgress(){
     saveRecords(r);
 }
 function addProgress(){if(progress<100){progress+=10;updateProgress();}}
-function resetProgress(){progress=0;updateProgress();}
+function completeProgress(){
+    progress = 100;
+    updateProgress();
+
+    // UX 좋게: 바로 달력으로 이동
+    setTimeout(() => {
+        goCalendar();
+    }, 150);
+}
 function goCalendar(){
     progressPage.classList.remove("active");
     calendarPage.classList.add("active");
     buildCalendar();
 }
 progressSlider.oninput=e=>{progress=parseInt(e.target.value);updateProgress();};
+
+nameEditor.onchange = () => {
+    const newName = nameEditor.value.trim();
+    if(!newName) {
+        nameEditor.value = exercises[manageIndex].name;
+        return;
+    }
+
+    // 동일 이름 → 무시
+    if(newName === exercises[manageIndex].name) return;
+
+    // 🔒 중복 검사 (자기 자신 제외)
+    const exists = exercises.some((e, idx) =>
+        idx !== manageIndex &&
+        e.name.trim().toLowerCase() === newName.toLowerCase()
+    );
+
+    if(exists){
+        alert("이미 존재하는 이름입니다");
+        nameEditor.value = exercises[manageIndex].name;
+        return;
+    }
+
+    // 📦 records key 이전 (중요!)
+    const oldKey = "records_" + exercises[manageIndex].name;
+    const newKey = "records_" + newName;
+    const data = localStorage.getItem(oldKey);
+    if(data){
+        localStorage.setItem(newKey, data);
+        localStorage.removeItem(oldKey);
+    }
+
+    // 이름 변경
+    exercises[manageIndex].name = newName;
+    saveExercises();
+    renderHome();
+};
+
+nameEditor.onkeydown = e => {
+    if(e.key === "Enter"){
+        nameEditor.blur();
+    }
+};
+
+const memoCard = document.getElementById("memoCard");
+
+addLongPress(memoCard, () => {
+    openMemo();
+});
+
+memoCard.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+});
 
 renderHome();
 </script>
