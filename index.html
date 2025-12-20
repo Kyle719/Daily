@@ -684,11 +684,7 @@ document.querySelector("button[onclick='goCalendar()']").onclick = () => { goCal
 window.onpopstate = function(event) {
     if (!event.state) {
         if (homePage.classList.contains("active")) {
-            if (confirm("앱을 종료하시겠습니까?")) {
-                window.close();
-            } else {
-                pushState("homePage");
-            }
+            window.close();
         } else {
             goHome();
             pushState("homePage");
