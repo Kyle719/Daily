@@ -87,32 +87,17 @@ body {
     font-size: 14px;
 }
 
-#memoInput {
-    width: 100%;
-    min-height: 180px;
-    background: #23232a;
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 14px;
-    font-size: 15px;
-    line-height: 1.6;
-    overflow: hidden;
-    resize: none;
-    box-sizing: border-box;
-}
-
 /* HOME BUTTON */
 .home-button {
-    height: 88px;      /* ⬅ 92 → 88 (살짝만 컴팩트) */
+    height: 88px;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;   /* ⬅ 21 → 20 */
+    font-size: 20px;
     font-weight: 700;
     cursor: pointer;
-    margin: 0;         /* ⭐ 중요: grid gap만 사용 */
+    margin: 0;
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     touch-action: manipulation;
     color: #ffffff;
@@ -155,7 +140,7 @@ body {
     align-items:center;
     justify-content:center;
     cursor:pointer;
-    position: relative; /* ← 이 줄 추가 */
+    position: relative;
 }
 .date.today::after {
     content:"";
@@ -175,18 +160,17 @@ body {
 
 /* PROGRESS */
 .container {
-    width: 100%;          /* 화면 폭 전체 사용 */
-    max-width: 90%;       /* 화면 폭의 90%까지만 제한 */
-    margin: 20px auto;    /* 상하 여백만 유지 */
+    width: 100%;
+    max-width: 90%;
+    margin: 20px auto;
     background: var(--card);
-    padding: 20px;        /* padding 조절 */
+    padding: 20px;
     border-radius: 20px;
     text-align: center;
 }
 
 .progress-wrapper {
     height: 40px;
-    /* background: var(--soft); */
     background: #3a3a45;
     border-radius: 16px;
     overflow: hidden;
@@ -198,7 +182,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, var(--theme), #ffffff);
     width: 0%;
-    transition: width 0.08s linear;   /* 드래그 시 살짝 부드럽게 */
+    transition: width 0.08s linear;
 }
 
 .progress-slider {
@@ -241,7 +225,7 @@ button {
     font-weight: 700;
     color: #ffffff;
     margin-bottom: 6px;
-    pointer-events: none; /* ⭐ 핵심 */
+    pointer-events: none;
     text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 
@@ -270,15 +254,12 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-12deg);
-
     width: 85%;
     height: 85%;
-
     background-image: url("icon-512.png");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
-
     opacity: 0.18;
     pointer-events: none;
     z-index: 10;
@@ -288,11 +269,6 @@ button {
     grid-template-columns: repeat(2, 1fr);
     column-gap: 8px;
     row-gap: 8px;
-}
-
-#memoInput.readonly {
-    pointer-events: none;
-    opacity: 0.85;
 }
 
 </style>
@@ -308,14 +284,6 @@ button {
                 <div class="goal-badge">DAILY</div>
             </div>
             <div id="goalContent" class="goal-content" contenteditable="false"></div>
-        </div>
-        <div class="goal-card detail-card" id="memoCard">
-            <div class="goal-header">
-                <div class="goal-title">Memo</div>
-            </div>
-            <div class="goal-content" id="memoPreview">
-                메모를 적어보세요
-            </div>
         </div>
         <div id="homeButtons"></div>
     </div>
@@ -348,32 +316,10 @@ button {
     </div>
 </div>
 
-<div id="memoPage" class="page">
-    <div class="container">
-        <button onclick="saveMemo(this)"
-            style="background:#3a3a45; color:#fff; border:none; border-radius:14px;
-                padding:12px 0; font-size:16px; font-weight:600; cursor:pointer;
-                margin-bottom:8px;">
-            저장
-        </button>
-        <textarea id="memoInput"
-            style="width:100%; min-height:180px; max-width:100%;
-                background:#23232a; color:#fff;
-                border:none; border-radius:14px;
-                padding:14px; font-size:15px;
-                line-height:1.6; overflow:hidden; resize:none;
-                box-sizing:border-box; margin:0; margin-top:8px;"
-            placeholder="메모를 입력하세요">
-        </textarea>        
-    </div>
-</div>
-
 <div id="manageModal" class="modal">
     <div class="modal-box">
         <h3>이름 수정</h3>
-        <input id="nameEditor"
-            type="text"
-            style="width:100%;height:44px;border-radius:12px;border:none;padding:0 12px;margin:10px 0;background:#23232a;color:#fff;">
+        <input id="nameEditor" type="text" style="width:100%;height:44px;border-radius:12px;border:none;padding:0 12px;margin:10px 0;background:#23232a;color:#fff;">
         <input type="color" id="colorPicker">
         <div class="color-grid" id="colorPresets"></div>
         <button onclick="moveExercise(-1)">⬆ 위로</button>
@@ -386,11 +332,7 @@ button {
 <div id="addModal" class="modal">
     <div class="modal-box">
         <h3>추가</h3>
-        <input id="newExerciseInput"
-               type="text"
-               placeholder="이름을 입력하세요"
-               style="width:100%;height:44px;border-radius:12px;border:none;padding:0 12px;margin:12px 0;background:#23232a;color:#fff;">
-
+        <input id="newExerciseInput" type="text" placeholder="이름을 입력하세요" style="width:100%;height:44px;border-radius:12px;border:none;padding:0 12px;margin:12px 0;background:#23232a;color:#fff;">
         <button onclick="confirmAddExercise()">추가</button>
         <button class="reset" onclick="closeAddModal()">취소</button>
     </div>
@@ -398,9 +340,7 @@ button {
 
 <script>
 function haptic(){
-    if (navigator.vibrate) {
-        navigator.vibrate(15);
-    }
+    if (navigator.vibrate) { navigator.vibrate(15); }
 }
 
 function addLongPress(el, callback, delay = 600) {
@@ -436,7 +376,7 @@ goalContent.addEventListener("dblclick", () => {
 let goalLastTap = 0;
 goalContent.addEventListener("touchend", (e) => {
     const now = Date.now();
-    if (now - goalLastTap < 300) {  // 300ms 이내 두 번째 터치면
+    if (now - goalLastTap < 300) {
         goalContent.contentEditable = "true";
         goalContent.classList.add("editing");
         goalContent.focus();
@@ -444,99 +384,7 @@ goalContent.addEventListener("touchend", (e) => {
     goalLastTap = now;
 });
 
-// 초기 상태
-memoInput.classList.add("readonly");
-
-memoInput.addEventListener("click", () => {
-    // memoInput.classList.remove("readonly");
-    memoInput.focus();
-});
-
-// 롱프레스 시 편집 허용
-addLongPress(memoInput, () => {
-    // memoInput.classList.remove("readonly");
-    memoInput.focus();
-});
-
-memoInput.addEventListener("blur", () => {
-    localStorage.setItem(MEMO_KEY, memoInput.value.trim());
-    updateMemoPreview();
-});
-
-const MEMO_KEY = "daily_memo";
-
-function openMemo(){
-    memoInput.value = localStorage.getItem(MEMO_KEY) || "";
-
-    // 입력 가능
-    memoInput.classList.remove("readonly");
-    memoInput.focus();
-
-    // 페이지 전환
-    homePage.classList.remove("active");
-    memoPage.classList.add("active");
-}
-
-function goHome(){
-    // ✅ Memo 입력 잠금
-    memoInput.classList.add("readonly");
-
-    calendarPage.classList.remove("active");
-    progressPage.classList.remove("active");
-    memoPage.classList.remove("active");
-    homePage.classList.add("active");
-}
-
-function saveMemo(btn){
-    const text = memoInput.value.trim();
-    localStorage.setItem(MEMO_KEY, text);
-    updateMemoPreview();
-
-    haptic();
-
-    const originalText = btn.innerText;
-    btn.innerText = "저장됨 ✓";
-    btn.disabled = true;
-
-    setTimeout(() => {
-        btn.innerText = originalText;
-        btn.disabled = false;
-
-        // ✅ Memo 입력 잠금 & 페이지 이동
-        memoInput.classList.add("readonly");   // 저장 시 잠금
-        memoPage.classList.remove("active");
-        homePage.classList.add("active");
-    }, 600);
-}
-
-function updateMemoPreview(){
-    const text = localStorage.getItem(MEMO_KEY);
-    memoPreview.innerText =
-        text && text.trim()
-        ? text.split("\n")[0].slice(0, 60)
-        : "메모를 적어보세요";
-}
-
-function adjustTextareaHeight(el){
-    el.style.height = 'auto'; // 초기화
-    el.style.height = el.scrollHeight + 'px'; // 내용에 맞게 높이
-}
-
-memoInput.addEventListener('input', () => {
-    adjustTextareaHeight(memoInput);
-});
-
-// 페이지 열릴 때 높이 초기화
-function openMemo(){
-    memoInput.value = localStorage.getItem(MEMO_KEY) || "";
-    memoInput.classList.remove("readonly");
-    memoInput.focus();
-    adjustTextareaHeight(memoInput); // 초기 높이 적용
-
-    homePage.classList.remove("active");
-    memoPage.classList.add("active");
-}
-
+// ===== EXERCISE MANAGEMENT =====
 const EX_KEY="exercise_list";
 let exercises=JSON.parse(localStorage.getItem(EX_KEY))||[{name:"Push Up",color:"#8e9aff"}];
 let currentExercise,manageIndex;
@@ -561,7 +409,6 @@ function renderHome(){
     add.innerText="+ 추가하기";
     add.onclick=addExercise;
     homeButtons.appendChild(add);
-    updateMemoPreview();
 }
 
 function addExercise(){
@@ -570,35 +417,17 @@ function addExercise(){
     setTimeout(()=>newExerciseInput.focus(), 0);
 }
 
-function closeAddModal(){
-    addModal.classList.remove("active");
-}
+function closeAddModal(){ addModal.classList.remove("active"); }
 
 function confirmAddExercise(){
     const name = newExerciseInput.value.trim();
     if(!name) return;
-
-    // 🔒 중복 이름 방지
-    const exists = exercises.some(e =>
-        e.name.trim().toLowerCase() === name.toLowerCase()
-    );
-    if(exists){
-        alert("이미 존재하는 운동 이름입니다");
-        return;
-    }
-
-    // ➕ 운동 추가
-    exercises.push({
-        name,
-        color: "#8e9aff"
-    });
-
+    const exists = exercises.some(e => e.name.trim().toLowerCase() === name.toLowerCase());
+    if(exists){ alert("이미 존재하는 이름입니다"); return; }
+    exercises.push({name, color: "#8e9aff"});
     saveExercises();
     renderHome();
-    updateMemoPreview();
     closeAddModal();
-
-    // 🎯 방금 추가한 운동 관리 모달 바로 열기
     openManage(exercises.length - 1);
 }
 
@@ -617,57 +446,36 @@ function openManage(i){
     nameEditor.value = exercises[i].name;
     colorPicker.value=exercises[i].color;
     colorPresets.innerHTML="";
-
     presetColors.forEach(c=>{
         const d=document.createElement("div");
         d.className="color-chip";
         d.style.background=c;
-
-        // 단일 클릭: 미리보기
         d.onclick=(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             exercises[manageIndex].color=c;
             colorPicker.value=c;
             saveExercises();
             renderHome();
         };
-
-        // 더블 클릭 (PC)
         d.ondblclick=(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-
+            e.preventDefault(); e.stopPropagation();
             exercises[manageIndex].color=c;
             saveExercises();
             renderHome();
-
-            setTimeout(()=>{
-                closeModal();
-                goHome();
-            }, 0);
+            setTimeout(()=>{closeModal(); goHome();},0);
         };
-
-        // 더블 탭 (모바일)
         let lastTap=0;
         d.ontouchend=(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-
+            e.preventDefault(); e.stopPropagation();
             const now=Date.now();
             if(now-lastTap<300){
                 exercises[manageIndex].color=c;
                 saveExercises();
                 renderHome();
-
-                setTimeout(()=>{
-                    closeModal();
-                    goHome();
-                }, 0);
+                setTimeout(()=>{closeModal(); goHome();},0);
             }
             lastTap=now;
         };
-
         colorPresets.appendChild(d);
     });
     manageModal.classList.add("active");
@@ -675,7 +483,7 @@ function openManage(i){
 
 colorPicker.oninput=e=>{
     exercises[manageIndex].color=e.target.value;
-    saveExercises();renderHome();
+    saveExercises(); renderHome();
 };
 
 function moveExercise(d){
@@ -683,16 +491,16 @@ function moveExercise(d){
     if(j<0||j>=exercises.length)return;
     [exercises[manageIndex],exercises[j]]=[exercises[j],exercises[manageIndex]];
     manageIndex=j;
-    saveExercises();renderHome();
+    saveExercises(); renderHome();
 }
 
 function deleteExercise(){
     if(!confirm("정말 삭제할까요?"))return;
     localStorage.removeItem("records_"+exercises[manageIndex].name);
     exercises.splice(manageIndex,1);
-    saveExercises();closeModal();renderHome();
+    saveExercises(); closeModal(); renderHome();
 }
-function closeModal(){manageModal.classList.remove("active");}
+function closeModal(){ manageModal.classList.remove("active"); }
 
 function openCalendar(e){
     currentExercise=e;
@@ -701,14 +509,10 @@ function openCalendar(e){
     calendarPage.classList.add("active");
     buildCalendar();
 }
-function goHome(){
-    // Memo 입력 잠금
-    memoInput.classList.add("readonly");
 
-    // 모든 페이지 비활성화
+function goHome(){
     calendarPage.classList.remove("active");
     progressPage.classList.remove("active");
-    memoPage.classList.remove("active");
     homePage.classList.add("active");
 }
 
@@ -729,11 +533,7 @@ function buildCalendar(){
         const div=document.createElement("div");
         div.className="date";
         div.innerText=d;
-        if(
-            d===today.getDate() &&
-            currentMonth===today.getMonth() &&
-            currentYear===today.getFullYear()
-        ){
+        if(d===today.getDate() && currentMonth===today.getMonth() && currentYear===today.getFullYear()){
             div.classList.add("today");
         }
         if(r[ds]===100)div.classList.add("done");
@@ -746,7 +546,6 @@ function buildCalendar(){
 function checkMonthCompleted() {
     const r = records();
     const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
-
     for (let d = 1; d <= lastDay; d++) {
         const ds = `${currentYear}-${currentMonth + 1}-${d}`;
         if (r[ds] !== 100) {
@@ -754,8 +553,6 @@ function checkMonthCompleted() {
             return;
         }
     }
-
-    // ⭐ 여기 중요
     calendarGrid.classList.add("completed-month");
 }
 
@@ -779,7 +576,6 @@ function openProgress(ds){
 function updateProgress(){
     progressBar.style.width = progress + "%";
     percentText.innerText = progress + "%";
-
     const r = records();
     r[selectedDate] = progress;
     saveRecords(r);
@@ -789,21 +585,17 @@ const add10Btn = document.getElementById("add10Btn");
 add10Btn.onclick = () => {
     if(progress < 100){
         progress += 10;
-        if(progress > 100) progress = 100; // 100% 초과 방지
+        if(progress > 100) progress = 100;
         updateProgress();
     }
 };
 
-function addProgress(){if(progress<100){progress+=10;updateProgress();}}
 function completeProgress(){
     progress = 100;
     updateProgress();
-
-    // UX 좋게: 바로 달력으로 이동
-    setTimeout(() => {
-        goCalendar();
-    }, 150);
+    setTimeout(() => { goCalendar(); }, 150);
 }
+
 function goCalendar(){
     progressPage.classList.remove("active");
     calendarPage.classList.add("active");
@@ -811,129 +603,106 @@ function goCalendar(){
 }
 
 const progressWrapper = document.querySelector(".progress-wrapper");
-
 let dragging = false;
-
 function getClientX(e) {
-    if (e.touches && e.touches.length) {
-        return e.touches[0].clientX;
-    }
-    if (e.changedTouches && e.changedTouches.length) {
-        return e.changedTouches[0].clientX;
-    }
+    if (e.touches && e.touches.length) return e.touches[0].clientX;
+    if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX;
     return e.clientX;
 }
-
 function updateProgressByDrag(e) {
     if (!dragging) return;
-
     const rect = progressWrapper.getBoundingClientRect();
     const clientX = getClientX(e);
     if (clientX == null) return;
-
     let ratio = (clientX - rect.left) / rect.width;
     ratio = Math.max(0, Math.min(1, ratio));
-
-    // 10% 단위 스냅
     progress = Math.round(ratio * 10) * 10;
-
     updateProgress();
 }
-
-/* ===== PC (마우스) ===== */
-progressWrapper.addEventListener("mousedown", (e) => {
-    dragging = true;
-    updateProgressByDrag(e);
-});
-
+progressWrapper.addEventListener("mousedown", (e) => { dragging = true; updateProgressByDrag(e); });
 document.addEventListener("mousemove", updateProgressByDrag);
-document.addEventListener("mouseup", () => {
-    if (dragging) haptic();
-    dragging = false;
-});
-
-/* ===== 모바일 (터치) ===== */
-progressWrapper.addEventListener("touchstart", (e) => {
-    e.preventDefault();   // ⭐ PWA / 모바일 필수
-    dragging = true;
-    updateProgressByDrag(e);
-}, { passive: false });
-
+document.addEventListener("mouseup", () => { if (dragging) haptic(); dragging = false; });
+progressWrapper.addEventListener("touchstart", (e) => { e.preventDefault(); dragging = true; updateProgressByDrag(e); }, { passive: false });
 document.addEventListener("touchmove", updateProgressByDrag, { passive: false });
-document.addEventListener("touchend", () => {
-    if (dragging) haptic();
-    dragging = false;
-});
+document.addEventListener("touchend", () => { if (dragging) haptic(); dragging = false; });
 
 nameEditor.onchange = () => {
     const newName = nameEditor.value.trim();
-    if(!newName) {
-        nameEditor.value = exercises[manageIndex].name;
-        return;
-    }
-
-    // 동일 이름 → 무시
+    if(!newName){ nameEditor.value = exercises[manageIndex].name; return; }
     if(newName === exercises[manageIndex].name) return;
-
-    // 🔒 중복 검사 (자기 자신 제외)
-    const exists = exercises.some((e, idx) =>
-        idx !== manageIndex &&
-        e.name.trim().toLowerCase() === newName.toLowerCase()
-    );
-
-    if(exists){
-        alert("이미 존재하는 이름입니다");
-        nameEditor.value = exercises[manageIndex].name;
-        return;
-    }
-
-    // 📦 records key 이전 (중요!)
+    const exists = exercises.some((e, idx)=> idx !== manageIndex && e.name.trim().toLowerCase() === newName.toLowerCase());
+    if(exists){ alert("이미 존재하는 이름입니다"); nameEditor.value = exercises[manageIndex].name; return; }
     const oldKey = "records_" + exercises[manageIndex].name;
     const newKey = "records_" + newName;
     const data = localStorage.getItem(oldKey);
-    if(data){
-        localStorage.setItem(newKey, data);
-        localStorage.removeItem(oldKey);
-    }
-
-    // 이름 변경
+    if(data){ localStorage.setItem(newKey, data); localStorage.removeItem(oldKey); }
     exercises[manageIndex].name = newName;
     saveExercises();
     renderHome();
 };
 
-nameEditor.onkeydown = e => {
-    if(e.key === "Enter"){
-        nameEditor.blur();
-    }
-};
-
-const memoCard = document.getElementById("memoCard");
-addLongPress(memoCard, () => {
-    openMemo();
-});
-memoCard.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-});
-memoCard.addEventListener("dblclick", openMemo);
-let memoLastTap = 0;
-memoCard.addEventListener("touchend", (e) => {
-    const now = Date.now();
-    if (now - memoLastTap < 300) {
-        openMemo();
-    }
-    memoLastTap = now;
-});
+nameEditor.onkeydown = e => { if(e.key === "Enter"){ nameEditor.blur(); } };
 
 renderHome();
 </script>
 <script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js");
-  });
+  window.addEventListener("load", () => { navigator.serviceWorker.register("./service-worker.js"); });
 }
+</script>
+<script>
+function pushState(pageId) {
+    history.pushState({page: pageId}, "", "#" + pageId);
+}
+
+function goHomeWithHistory() {
+    goHome();
+    pushState("homePage");
+}
+
+function openCalendarWithHistory(e) {
+    openCalendar(e);
+    pushState("calendarPage");
+}
+
+function openProgressWithHistory(ds) {
+    openProgress(ds);
+    pushState("progressPage");
+}
+
+document.querySelectorAll('.home-button').forEach(b => {
+    const orig = b.onclick;
+    b.onclick = function(e){
+        orig.call(this,e);
+        pushState("calendarPage");
+    }
+});
+document.querySelector("button[onclick='goHome()']").onclick = goHomeWithHistory;
+document.querySelector("button[onclick='goCalendar()']").onclick = () => { goCalendar(); pushState("calendarPage"); };
+
+// 뒤로가기 처리
+window.onpopstate = function(event) {
+    if (!event.state) {
+        if (homePage.classList.contains("active")) {
+            if (confirm("앱을 종료하시겠습니까?")) {
+                window.close();
+            } else {
+                pushState("homePage");
+            }
+        } else {
+            goHome();
+            pushState("homePage");
+        }
+    } else {
+        switch(event.state.page) {
+            case "homePage": goHome(); break;
+            case "calendarPage": goCalendar(); break;
+            case "progressPage": progressPage.classList.add("active"); break;
+        }
+    }
+};
+
+pushState("homePage");
 </script>
 </body>
 </html>
