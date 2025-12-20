@@ -217,6 +217,15 @@ button {
 }
 .danger { background:#e53935; }
 
+.progress-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+    pointer-events: none; /* ⭐ 핵심 */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
 /* COLOR PRESET */
 .color-grid {
     display:grid;
@@ -310,12 +319,10 @@ button {
     <div class="container">
         <h2 id="exerciseTitle"></h2>
         <h3 id="dateTitle"></h3>
+        <div class="progress-text" id="percentText">0%</div>
         <div class="progress-wrapper">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-        <input type="range" id="progressSlider" class="progress-slider" min="0" max="100" step="10">
-        <div id="percentText">0%</div>
-        <button onclick="addProgress()">+10%</button>
         <button onclick="completeProgress()">완료</button>
         <button onclick="goCalendar()">← 달력으로</button>
     </div>
@@ -710,13 +717,14 @@ function openProgress(ds){
 }
 
 function updateProgress(){
-    progressBar.style.width=progress+"%";
-    percentText.innerText=progress+"%";
-    progressSlider.value=progress;
-    const r=records();
-    r[selectedDate]=progress;
+    progressBar.style.width = progress + "%";
+    percentText.innerText = progress + "%";
+
+    const r = records();
+    r[selectedDate] = progress;
     saveRecords(r);
 }
+
 function addProgress(){if(progress<100){progress+=10;updateProgress();}}
 function completeProgress(){
     progress = 100;
@@ -732,7 +740,21 @@ function goCalendar(){
     calendarPage.classList.add("active");
     buildCalendar();
 }
-progressSlider.oninput=e=>{progress=parseInt(e.target.value);updateProgress();};
+
+const progressWrapper = document.querySelector(".progress-wrapper");
+
+progressWrapper.addEventListener("click", (e) => {
+    const rect = progressWrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const ratio = x / rect.width;
+
+    // 10% 단위로 스냅
+    progress = Math.round(ratio * 10) * 10;
+    progress = Math.max(0, Math.min(100, progress));
+
+    haptic();
+    updateProgress();
+});
 
 nameEditor.onchange = () => {
     const newName = nameEditor.value.trim();
