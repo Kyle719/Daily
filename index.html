@@ -456,19 +456,19 @@ function confirmAddExercise(){
     if(!name) return;
     const exists = exercises.some(e => e.name.trim().toLowerCase() === name.toLowerCase());
     if(exists){ alert("이미 존재하는 이름입니다"); return; }
-    exercises.push({name, color: "#8e9aff"});
+    exercises.push({name, color: "#262a33"});
     saveExercises();
     renderHome();
     closeAddModal();
     openManage(exercises.length - 1);
 }
 
-const presetColors=[
-"#1f3c88","#273c75","#0652dd","#0a3d62",
-"#5f27cd","#6d214f","#4a148c","#8e44ad",
-"#006266","#1b5e20","#2e7d32","#0b5345",
-"#b71540","#c0392b","#d35400","#a04000",
-"#3c6382","#596275","#4b6584","#2c3e50"
+const presetColors = [
+  "#262a33","#2f343e","#37404a","#424b57","#4b5563",
+  "#1e2a3a", "#24344c", "#2a3e5d", "#30486f","#365181",
+  "#3a1e23", "#45262b", "#502f34", "#5b373d","#663f46",
+  "#1e3a26", "#23452f", "#2a5038", "#2f5b41","#36644a",
+  "#3a331e", "#453d26", "#50462f", "#5b5037","#665740"
 ];
 
 const calendarGrid = document.getElementById("calendar");
