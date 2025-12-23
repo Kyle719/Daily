@@ -347,8 +347,9 @@ button {
             <div class="progress-bar" id="progressBar"></div>
         </div>
         <button id="add10Btn">+10%</button>
-        <button onclick="completeProgress()">완료</button>
+        <button onclick="completeProgress()">완료 🏆</button>
         <button onclick="goCalendar()">← 달력으로</button>
+        <button onclick="goHome()">← 홈으로</button>
     </div>
 </div>
 
@@ -692,7 +693,15 @@ renderHome();
 </script>
 <script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { navigator.serviceWorker.register("./service-worker.js"); });
+  window.addEventListener("load", async () => {
+    const reg = await navigator.serviceWorker.register(
+      "./service-worker.js",
+      { updateViaCache: "none" }   // ⭐ 핵심
+    );
+
+    // 페이지 열릴 때마다 SW 강제 업데이트 체크
+    reg.update();
+  });
 }
 </script>
 </body>
