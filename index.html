@@ -297,8 +297,13 @@ button {
 }
 #homeButtons {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
+}
+
+.home-button {
+    aspect-ratio: 1 / 1;   /* 정사각형 유지 */
+    height: auto;          /* 중요 */
 }
 
 </style>
